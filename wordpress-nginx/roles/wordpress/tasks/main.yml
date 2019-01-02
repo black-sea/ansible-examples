@@ -1,0 +1,50 @@
+---
+- name: Install MySQL-python
+  yum:
+    name: MySQL-python
+    state: present
+
+
+- name: Download WordPress
+  get_url: url=http://wordpress.org/wordpress-{{ wp_version }}.tar.gz dest=/usr/local/src/
+
+- name: Extract archive
+  unarchive:
+    src: "/usr/local/src/wordpress-{{ wp_version }}.tar.gz"
+    dest: /usr/local/nginx/html/
+    copy: no
+
+- name: Fetch random salts for WordPress config
+  command: curl https://api.wordpress.org/secret-key/1.1/salt/
+  register: "wp_salt"
+
+
+- name: Create WordPress database
+  mysql_db:
+    login_host: "localhost"
+    login_unix_socket: "/tmp/mysql.sock"
+    login_user: "root"
+    login_password: "linlin"
+    login_port: "3306"
+    name: "wordpress"
+    encoding: "utf8"
+    state: "present"
+
+- name: Create WordPress database user
+  mysql_user: 
+    login_host: "localhost"
+    login_unix_socket: "/tmp/mysql.sock"
+    login_user: "root"
+    login_password: "linlin"
+    user: "{{wp_db_user}}"
+    name: "{{wp_db_name}}"
+    password: "{{wp_db_password}}"
+    host: "localhost"
+    priv: "*.*:all"
+    state: "present"
+
+
+- name: Copy WordPress config file
+  template: src=wp-config.php dest=/usr/local/nginx/html/wordpress/
+
+

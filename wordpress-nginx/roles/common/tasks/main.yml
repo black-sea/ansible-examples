@@ -1,0 +1,35 @@
+---
+- name: Del repo for system
+  shell:
+    rm -f /etc/yum.repos.d/Cento-Base.repo && rm -f /etc/yum.repos.d/epel.repo
+
+
+
+- name: Get repo  centos6 for  alibaba
+  get_url:
+    url: http://mirrors.aliyun.com/repo/Centos-6.repo
+    dest: /etc/yum.repos.d/CentOS-Base.repo
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6")
+ 
+
+
+- name: Get repo centos7  for alibaba
+  get_url:
+    url: http://mirrors.aliyun.com/repo/Centos-7.repo
+    dest: /etc/yum.repos.d/CentOS-Base.repo
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+
+
+
+- name: Get epel repo cenots6  for alibaba 
+  get_url:
+    url: http://mirrors.aliyun.com/repo/epel-6.repo
+    dest: /etc/yum.repos.d/epel.repo 
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6")
+
+- name: Get epel repo cenots7  for alibaba 
+  get_url:
+    url: http://mirrors.aliyun.com/repo/epel-7.repo
+    dest: /etc/yum.repos.d/epel.repo
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+

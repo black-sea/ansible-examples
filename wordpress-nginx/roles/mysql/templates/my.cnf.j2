@@ -1,0 +1,10 @@
+[mysqld]
+basedir={{basedir}}
+datadir={{datadir}}
+user=mysql
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+port={{mysql_port}}
+log_error=/data/mysql/mysqld.log
+
+[mysqld_safe]

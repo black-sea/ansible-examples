@@ -1,0 +1,98 @@
+---
+
+- name: Install php depend soft  
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - libxml2-devel
+    - libcurl-devel
+    - libjpeg-devel
+    - libpng-devel
+    - freetype-devel
+    - zlib-devel  
+    - bzip2-devel 
+    - ncurses-devel
+    - gcc
+    - autoconf 
+    - curl-devel
+    - gd-devel
+    - libmcrypt-devel
+    - openssl-devel
+    - mhash 
+   
+
+- name: Download php package
+  get_url:
+    url: http://mirrors.sohu.com/php/php-5.6.32.tar.gz
+    dest: /usr/local/src/
+
+
+- name: Unzip php package
+  unarchive:
+    src: /usr/local/src/php-5.6.32.tar.gz
+    dest: /usr/local/src
+    copy: no
+
+- name: Configure and make and make install
+  shell:
+    ./configure  \
+    --prefix=/usr/local/php \
+    --with-config-file-path=/usr/local/php/etc  \
+    --enable-fpm \
+    --with-fpm-user=nginx \
+    --with-fpm-group=nginx \
+    --with-mysql=mysqlnd \
+    --with-mysqli=mysqlnd \
+    --with-pdo-mysql=mysqlnd \
+    --with-libxml-dir \
+    --with-gd \
+    --with-mhash \
+    --with-jpeg-dir \
+    --with-png-dir \
+    --with-freetype-dir \
+    --with-iconv-dir \
+    --with-zlib-dir \
+    --with-mcrypt \
+    --enable-soap \
+    --enable-xml \
+    --enable-zip \
+    --enable-gd-native-ttf \
+    --enable-ftp \
+    --enable-mbstring \
+    --enable-exif \
+    --disable-ipv6 && make clean && make && make install
+  args:
+    chdir: /usr/local/src//php-5.6.32
+
+
+- name: Create php-fpm  script to start munu for centos6
+  shell: 
+    /bin/cp /usr/local/src/php-5.6.32/sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm && chmod 755 /etc/init.d/php-fpm
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6")
+
+
+- name: Create php-fpm script to start menu for cenots7
+  copy:
+    src: php-fpm.service
+    dest: /usr/lib/systemd/system/php-fpm.service
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+  notify: 
+    - Reload service
+- meta: flush_handlers
+
+- name: Copy php.ini file
+  shell:
+     cp php.ini-production /usr/local/php/etc/php.ini
+  args:
+    chdir: /usr/local/src/php-5.6.32
+
+
+    
+- name: Copy php-fpm config
+  copy:
+    src: php-fpm.conf
+    dest: /usr/local/php/etc/php-fpm.conf
+  notify: 
+    - Restart php-fpm 
+

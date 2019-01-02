@@ -1,0 +1,8 @@
+---
+- name: Restart php-fpm
+  service: name=php-fpm state=restarted enabled=yes
+
+- name: Reload service
+  shell:
+    systemctl  daemon-reload
+

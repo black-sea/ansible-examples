@@ -1,0 +1,72 @@
+---
+
+- name: Create mysql user
+  user:
+    name: mysql
+
+
+- name: Download mysql
+  get_url: 
+    url: http://mirrors.163.com/mysql/Downloads/MySQL-5.5/mysql-{{mysql_version}}-linux-glibc2.12-x86_64.tar.gz
+    dest: /usr/local/src
+
+
+- name: Unzip mysql
+  unarchive:
+    src: /usr/local/src/mysql-{{mysql_version}}-linux-glibc2.12-x86_64.tar.gz
+    dest: /usr/local/src/
+    copy: no
+
+- name: Rename mysql 
+  shell:
+    mv /usr/local/src/mysql-{{mysql_version}}-linux-glibc2.12-x86_64 /usr/local/mysql && chown -R mysql:mysql {{basedir}}
+  
+
+- name: Create data storage
+  file:
+    path: /data/mysql
+    state: directory
+    owner: mysql
+    group: mysql
+
+
+- name: Init mysql 
+  shell:
+    ./scripts/mysql_install_db --user=mysql --basedir={{basedir}} --datadir={{datadir}}
+  args:
+    chdir: "{{basedir}}"
+
+- name: Create mysql script for centos6
+  shell:
+    cp "{{basedir}}/support-files/mysql.server"  /etc/init.d/mysqld && chmod 755 /etc/init.d/mysqld
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6")
+
+- name: Create mysql script for centos7
+  copy:
+    src: mysqld.service
+    dest: /usr/lib/systemd/system/mysqld.service
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+  notify:
+    - Reload service
+- meta: flush_handlers
+
+
+- name: Copy mysql config 
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+
+- name: Restart mysqld
+  service:
+    name: mysqld
+    state: restarted
+  register: result
+
+#根据服务器配置不同,mysql启动速度有所区别。    
+- name: sleep 10s
+  shell:
+    sleep 20
+
+- name: Copy root password file
+  shell:
+    /usr/local/mysql/bin/mysqladmin -uroot password linlin

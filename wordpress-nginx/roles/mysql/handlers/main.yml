@@ -1,0 +1,8 @@
+---
+
+- name: Reload service
+  shell:
+    systemctl daemon-reload
+
+- name: Start mysqld
+  service: name=mysqld state=Started
