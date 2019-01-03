@@ -1,0 +1,79 @@
+---
+
+- name: Add tomcat group
+  user:
+    name: tomcat
+
+- name: Add tomcat user
+  user:
+    name: tomcat
+    create_home: no
+
+
+- name: Download tomcat
+  get_url:
+    url: "{{ tomcat_url}}"
+    dest: /usr/local/src/
+
+- name: Unzip tomcat
+  unarchive:
+    src: "/usr/local/src/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: /usr/local/src/
+    copy: no
+
+- name: Rename tomcat 
+  shell:
+     mv "/usr/local/src/apache-tomcat-{{ tomcat_version }}" /usr/local/apache-tomcat 
+
+- name: Del webapps directory
+  file:
+    path: /usr/local/apache-tomcat/webapps
+    state: absent
+
+- name: Mkdir webapss directory
+  file:
+    path: /usr/local/apache-tomcat/webapps
+    state: directory
+    owner: tomcat
+    group: tomcat
+
+#- name: Chown tomcat tomcat_dir
+#  file:
+#    path: /usr/local/apache-tomcat/
+#    owner: tomcat
+#    group: tomcat
+
+
+- name: Define tomcat pid for centos7
+  copy:
+    src: catalina.sh
+    dest: /usr/local/apache-tomcat/bin/
+    owner: tomcat
+    group: tomcat
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+
+- name:  Create tomcat script for centos6
+  copy:
+    src: tomcat_centos6.sh
+    dest: /etc/init.d/tomcat
+    mode: 755
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "6")
+
+
+- name: Create tomcat script for centos7
+  copy:
+    src: tomcat_centos7.sh 
+    dest: /usr/lib/systemd/system/tomcat.service
+    mode: 755
+  when: (ansible_distribution == "CentOS" and ansible_distribution_major_version == "7")
+  notify:
+    - Reload service
+- meta: flush_handlers
+
+
+
+- name: Start tomcat
+  service:
+    name: tomcat
+    state: started
+    enabled: yes

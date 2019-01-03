@@ -1,0 +1,22 @@
+---
+
+- name: Unzip jdk.tar.gz
+  unarchive:
+    src: jdk-8u151-linux-x64.tar.gz
+    dest: /usr/local/
+
+
+- name: Configuration java env 
+  copy:
+    src: java.sh
+    dest: /etc/profile.d/
+
+
+
+- name: Source profile
+  shell:
+    source /etc/profile
+
+
+
+

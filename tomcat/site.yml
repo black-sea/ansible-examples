@@ -1,0 +1,8 @@
+---
+
+- name: Install tomcat
+  hosts: tomcat_server
+
+  roles:
+    - jdk
+    - tomcat
