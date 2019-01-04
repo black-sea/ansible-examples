@@ -37,12 +37,12 @@
     owner: tomcat
     group: tomcat
 
-#- name: Chown tomcat tomcat_dir
-#  file:
-#    path: /usr/local/apache-tomcat/
-#    owner: tomcat
-#    group: tomcat
-
+- name: Chown tomcat tomcat_dir
+  file:
+    path: /usr/local/apache-tomcat
+    owner: tomcat
+    group: tomcat
+    recurse: yes
 
 - name: Define tomcat pid for centos7
   copy:

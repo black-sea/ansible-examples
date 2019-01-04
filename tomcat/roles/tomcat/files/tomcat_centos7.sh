@@ -10,7 +10,7 @@ ExecStart=/usr/local/apache-tomcat/bin/startup.sh
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 PrivateTmp=true
-
+User=tomcat
 [Install]
 WantedBy=multi-user.target
 
