@@ -71,6 +71,9 @@
 - meta: flush_handlers
 
 
+- name: Source profile
+  shell:
+    source /etc/profile
 
 - name: Start tomcat
   service:

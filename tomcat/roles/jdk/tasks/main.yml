@@ -13,10 +13,5 @@
 
 
 
-- name: Source profile
-  shell:
-    source /etc/profile
-
-
 
 
