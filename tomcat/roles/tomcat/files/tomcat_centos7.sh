@@ -4,7 +4,9 @@ After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-Evironment="JAVA_HOME=/usr/local/jdk1.8.0_115"
+Environment=JAVA_HOME=/usr/local/jdk1.8.0_151/
+Environment=JRE_HOME=/usr/local/jdk1.8.0_151/
+Environment=CATALINA_HOME=/usr/local/apache-tomcat
 PIDFile=/usr/local/apache-tomcat/tomcat.pid
 ExecStart=/usr/local/apache-tomcat/bin/startup.sh
 ExecReload=/bin/kill -s HUP $MAINPID

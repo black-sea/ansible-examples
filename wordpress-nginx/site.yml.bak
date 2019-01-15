@@ -1,0 +1,14 @@
+---
+- name: Install Mysql
+  hosts: Dbser
+  remote_user: root
+  roles:
+    - role: mysql
+      tags: ["mysql"]
+
+- name: Install nginx
+  hosts: webserver
+  roles:
+    - role: nginx
+    - role: php-fpm
+    - role: wordpress

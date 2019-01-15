@@ -4,7 +4,7 @@
 # description: Tomcat start/stop/status script
 
 #Location of JAVA_HOME (bin files)
-export JAVA_HOME=/usr/local/jdk1.8.0_115
+export JAVA_HOME=/usr/local/jdk1.8.0_151
 
 #Add Java binary files to PATH
 export PATH=$JAVA_HOME/bin:$PATH
